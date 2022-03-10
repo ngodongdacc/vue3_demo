@@ -32,6 +32,9 @@ const app = createApp(App)
 // app.prototype.$http = http
 
 app.config.globalProperties.$http = http;
+app.config.globalProperties.$up = (pro, value) => {
+    app.config.globalProperties[pro] = value;
+}
 app.use(router)
 app.use(VueSweetalert2)
 app.use(BootstrapVue3)

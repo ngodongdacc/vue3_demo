@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Register</h2>
+    <h2 v-if = "!state.id">Register</h2>
     <form>
       <div class="form-row row">
         <div class="form-group col-6">
@@ -93,7 +93,7 @@
             {{ v$.user.username.$errors[0].$message }}
           </span>
         </div>
-        <div class="form-group col-6">
+        <div class="form-group col-6" v-if = "!state.id">
           <label htmlFor="password">Password</label>
           <input
             type="password"
@@ -109,7 +109,7 @@
             {{ v$.user.password.$errors[0].$message }}
           </span>
         </div>
-        <div class="form-group col-6">
+        <div class="form-group col-6" v-if = "!state.id">
           <label htmlFor="password">confirm Password</label>
           <input
             type="password"
@@ -127,7 +127,7 @@
         </div>
       </div>
     </form>
-    <div style="top: 20px">
+    <div style="top: 20px; text-align: right;">
       <button
         class="btn btn-success"
         @click="submitForm"
@@ -157,6 +157,7 @@ import { reactive, computed } from "vue";
 import useValidate from "@vuelidate/core";
 import { required, email, minLength, sameAs, helpers } from "@vuelidate/validators";
 import * as Yup from "yup";
+import moment from "moment";
 
 import URL from "@/config/url";
 
@@ -181,10 +182,10 @@ export default {
       if (state.id) {
         return {
           user: {
-            firstName: { minLength: minLength(2) },
-            lastName: { minLength: minLength(2) },
+            firstName: {required, minLength: minLength(2) },
+            lastName: {required, minLength: minLength(2) },
             dob: {},
-            phone: {},
+            phone: {required, minLength: minLength(10)},
             email: {},
             username: { minLength: minLength(5) },
             password: {},
@@ -197,8 +198,8 @@ export default {
           user: {
             firstName: { required, minLength: minLength(2) },
             lastName: { required, minLength: minLength(2) },
-            dob: { required },
-            phone: { required },
+            dob: { },
+            phone: { required, minLength: minLength(10) },
             email: { required },
             username: { required, minLength: minLength(5) },
             password: { required, minLength: minLength(6) },
@@ -302,6 +303,7 @@ export default {
           .then((result) => {
             if (result && result.data && result.data.data) {
               this.state.user = result.data.data;
+              this.state.user.dob = this.formatDate(this.state.user.dob, 'YYYY-MM-DD')
             }
           })
           .catch((e) => {
@@ -337,6 +339,12 @@ export default {
             console.log("err editUser:: ", e);
           });
       }
+    },
+    formatDate(value, format = "DD-MM-YYYY") {
+      if (value && value !== "") {
+        return moment(value).format(format);
+      }
+      return "";
     },
   },
 };

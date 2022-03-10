@@ -42,11 +42,13 @@ import { reactive, computed } from "vue";
 // import { helpers } from 'vuelidate/lib/validators'
 // import { Form, Field } from 'vee-validate'
 import useValidate from "@vuelidate/core";
+import http from '@/http'
 import { required, email, minLength, sameAs, helpers } from "@vuelidate/validators";
 import axios from "axios";
 import qs from "qs";
 import * as Yup from "yup";
 import URL from "@/config/url";
+// import Vue from 'vue'
 
 export default {
   setup() {
@@ -125,6 +127,7 @@ export default {
           .then((result) => {
             if (result.data && result.data.token) {
               localStorage.setItem("token", result.data.token);
+              this.$up('$http', http);
               const profileOpt = {
                 method: "GET",
                 headers: {
