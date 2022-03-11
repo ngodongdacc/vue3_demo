@@ -162,7 +162,13 @@ import Ajv from "ajv";
 const schema = {
   type: "object",
   properties: {
-    firstName: { type: "string", minLength: 1 },
+    firstName: {
+      type: "string",
+      minLength: 1,
+      // errorMesage:{
+      //   minLength:"sdasdas"
+      // }
+    },
     lastName: { type: "string", minLength: 1 },
     username: { type: "string" },
     dob: { type: "string" },
@@ -171,6 +177,11 @@ const schema = {
   },
   required: ["firstName", "lastName", "username", "password", "confirmPassword"],
   additionalProperties: false,
+  errorMessage: {
+    type: "should be an object", // will not replace internal "type" error for the property "foo"
+    required: "should have property foo",
+    additionalProperties: "should not have properties other than foo",
+  },
 };
 const ajv = new Ajv();
 const validate = ajv.compile(schema);
@@ -217,8 +228,30 @@ export default {
       console.log("valid:: ", valid);
       if (!valid) {
         console.log("errors:: ", validate.errors);
-        this.message[validate.errors[0].instancePath.replace("/", "")] =
-          validate.errors[0].message;
+
+        // this.message[validate.errors[0].instancePath.replace("/", "")] =
+        //   validate.errors[0].message;
+        for (const err of validate.errors) {
+          let message = "";
+          switch (err.keyword) {
+            case "minLength":
+              console.log("err.limit:: ", err.params.limit);
+              if (err.params.limit === 1) {
+                message = "Vui lòng điền thông tin";
+              } else {
+                message = "Vui lòng điền thông tin";
+              }
+              break;
+            case "maximum":
+              console.log(err.limit);
+              break;
+            case "pattern":
+              console.log(err.pattern);
+              break;
+            // ...
+          }
+          this.message[validate.errors[0].instancePath.replace("/", "")] = message;
+        }
       }
       // if (this.id) {
       //   this.editUser();
