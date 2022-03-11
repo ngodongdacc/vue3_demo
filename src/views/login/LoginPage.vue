@@ -1,37 +1,41 @@
 <template>
   <div class="container">
-    <h2>LOGIN</h2>
-    <form>
-      <div class="form-row">
-        <div class="form-group col-12">
-          <label for="username">Username</label>
-          <input
-            type="text"
-            name="username"
-            v-model="state.user.username"
-            class="form-control"
-            :class="{ 'is-invalid': submitted && errors.has('username') }"
-          />
-          <span class="error-validate" v-if="v$.user.username.$error">
-            {{ v$.user.username.$errors[0].$message }}
-          </span>
+    <!-- <h2>LOGIN</h2> -->
+    <div class="login">
+      <form>
+        <div class="form-row">
+          <div class="form-group col-12">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              name="username"
+              v-model="state.user.username"
+              class="form-control"
+              :class="{ 'is-invalid': submitted && errors.has('username') }"
+            />
+            <span class="error-validate" v-if="v$.user.username.$error">
+              {{ v$.user.username.$errors[0].$message }}
+            </span>
+          </div>
+          <div class="form-group col-12">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              name="password"
+              v-model="state.user.password"
+              class="form-control"
+              :class="{ 'is-invalid': submitted && errors.has('password') }"
+            />
+            <span class="error-validate" v-if="v$.user.password.$error">
+              {{ v$.user.password.$errors[0].$message }}
+            </span>
+          </div>
         </div>
-        <div class="form-group col-12">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            name="password"
-            v-model="state.user.password"
-            class="form-control"
-            :class="{ 'is-invalid': submitted && errors.has('password') }"
-          />
-          <span class="error-validate" v-if="v$.user.password.$error">
-            {{ v$.user.password.$errors[0].$message }}
-          </span>
-        </div>
+      </form>
+      <div class="btn-login">
+        <button class="btn btn-success" style="width: 50%" @click="submitForm">Log In</button>
       </div>
-    </form>
-    <button class="btn btn-primary" @click="submitForm">logIn</button>
+    </div>
     <!-- <router-link to="/login" class="btn btn-link">Cancel</router-link> -->
   </div>
 </template>
@@ -42,7 +46,7 @@ import { reactive, computed } from "vue";
 // import { helpers } from 'vuelidate/lib/validators'
 // import { Form, Field } from 'vee-validate'
 import useValidate from "@vuelidate/core";
-import http from '@/http'
+import http from "@/http";
 import { required, email, minLength, sameAs, helpers } from "@vuelidate/validators";
 import axios from "axios";
 import qs from "qs";
@@ -127,7 +131,8 @@ export default {
           .then((result) => {
             if (result.data && result.data.token) {
               localStorage.setItem("token", result.data.token);
-              this.$up('$http', http);
+              this.$up("$http", http);
+              this.$up("$loggedIn", true);
               const profileOpt = {
                 method: "GET",
                 headers: {
@@ -158,5 +163,15 @@ export default {
 <style>
 .error-validate {
   color: red;
+}
+.login {
+  left: 50%;
+  width: 300px;
+  top: 300px;
+  transform: translateX(-50%);
+}
+.btn-login {
+  margin-top: 20px;
+  text-align: center;
 }
 </style>

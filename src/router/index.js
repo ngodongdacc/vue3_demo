@@ -35,6 +35,8 @@ router.beforeEach((to, from, next) => {
 
   if (authRequired && !loggedIn) {
     return next('/login');
+  } else {
+    // this.$up("$loggedIn", true)
   }
 
   next();
