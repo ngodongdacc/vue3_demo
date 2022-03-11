@@ -178,8 +178,8 @@ const schema = {
   required: ["firstName", "lastName", "username", "password", "confirmPassword"],
   additionalProperties: false,
   errorMessage: {
-    type: "should be an object", // will not replace internal "type" error for the property "foo"
-    required: "should have property foo",
+    type: "", // will not replace internal "type" error for the property "foo"
+    required: "Vui lòng",
     additionalProperties: "should not have properties other than foo",
   },
 };
@@ -237,7 +237,7 @@ export default {
             case "minLength":
               console.log("err.limit:: ", err.params.limit);
               if (err.params.limit === 1) {
-                message = "Vui lòng điền thông tin";
+                message = validate.errors[0].message + "firtname";
               } else {
                 message = "Vui lòng điền thông tin";
               }
