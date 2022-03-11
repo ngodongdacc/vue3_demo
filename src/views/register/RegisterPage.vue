@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 v-if = "!state.id">Register</h2>
+    <h2 v-if="!id">Register</h2>
     <form>
       <div class="form-row row">
         <div class="form-group col-6">
@@ -8,22 +8,18 @@
           <input
             type="text"
             name="firstName"
-            v-model="state.user.firstName"
+            v-model="user.firstName"
             class="form-control"
-            :class="{ 'is-invalid': submitted && errors.has('firstName') }"
           />
-          <!-- <div v-if="submitted && errors.has('firstName')" class="invalid-feedback">
-          {{ errors.first("firstName") }}
-        </div> -->
-          <span class="error-validate" v-if="v$.user.firstName.$error">
-            {{ v$.user.firstName.$errors[0].$message }}
+          <span class="error-validate" v-if="message.firstName">
+            {{ message.firstName }}
           </span>
         </div>
         <div class="form-group col-6">
           <label for="lastName">Last Name</label>
           <input
             type="text"
-            v-model="state.user.lastName"
+            v-model="user.lastName"
             name="lastName"
             class="form-control"
             :class="{ 'is-invalid': submitted && errors.has('lastName') }"
@@ -31,8 +27,8 @@
           <!-- <div v-if="submitted && errors.has('lastName')" class="invalid-feedback">
           {{ errors.first("lastName") }}
         </div> -->
-          <span class="error-validate" v-if="v$.user.lastName.$error">
-            {{ v$.user.lastName.$errors[0].$message }}
+          <span class="error-validate" v-if="message.lastName">
+            {{ message.lastName }}
           </span>
         </div>
         <div class="form-group col-6">
@@ -40,25 +36,24 @@
           <input
             type="date"
             name="dob"
-            v-model="state.user.dob"
+            v-model="user.dob"
             class="form-control"
             :class="{ 'is-invalid': submitted && errors.has('old') }"
           />
-          <span class="error-validate" v-if="v$.user.dob.$error">
-            {{ v$.user.dob.$errors[0].$message }}
-          </span>
         </div>
         <div class="form-group col-6">
           <label for="phone">Phone</label>
           <input
             type="text"
             name="phone"
-            v-model="state.user.phone"
+            @change="phonenumber"
+            v-model="user.phone"
             class="form-control"
-            :class="{ 'is-invalid': submitted && errors.has('old') }"
+            :class="{ 'is-invalid': submitted && errors.has('phone') }"
+            @keypress="onlyNumber"
           />
-          <span class="error-validate" v-if="v$.user.phone.$error">
-            {{ v$.user.phone.$errors[0].$message }}
+          <span class="error-validate" v-if="message.phone">
+            {{ message.phone }}
           </span>
         </div>
         <div class="form-group col-6">
@@ -66,15 +61,16 @@
           <input
             type="text"
             name="email"
-            v-model="state.user.email"
+            @change="validateEmail"
+            v-model="user.email"
             class="form-control"
             :class="{ 'is-invalid': submitted && errors.has('email') }"
           />
           <!-- <div v-if="submitted && errors.has('username')" class="invalid-feedback">
           {{ errors.first("username") }}
         </div> -->
-          <span class="error-validate" v-if="v$.user.email.$error">
-            {{ v$.user.email.$errors[0].$message }}
+          <span class="error-validate" v-if="message.email">
+            {{ message.email }}
           </span>
         </div>
         <div class="form-group col-6">
@@ -82,64 +78,58 @@
           <input
             type="text"
             name="username"
-            v-model="state.user.username"
+            v-model="user.username"
             class="form-control"
             :class="{ 'is-invalid': submitted && errors.has('username') }"
           />
-          <!-- <div v-if="submitted && errors.has('username')" class="invalid-feedback">
-          {{ errors.first("username") }}
-        </div> -->
-          <span class="error-validate" v-if="v$.user.username.$error">
-            {{ v$.user.username.$errors[0].$message }}
+          <span class="error-validate" v-if="message.username">
+            {{ message.username }}
           </span>
         </div>
-        <div class="form-group col-6" v-if = "!state.id">
+        <div class="form-group col-6" v-if="!id">
           <label htmlFor="password">Password</label>
           <input
             type="password"
             name="password"
-            v-model="state.user.password"
+            v-model="user.password"
             class="form-control"
             :class="{ 'is-invalid': submitted && errors.has('password') }"
           />
           <!-- <div v-if="submitted && errors.has('password')" class="invalid-feedback">
           {{ errors.first("password") }}
         </div> -->
-          <span class="error-validate" v-if="v$.user.password.$error">
-            {{ v$.user.password.$errors[0].$message }}
+          <span class="error-validate" v-if="message.password">
+            {{ message.password }}
           </span>
         </div>
-        <div class="form-group col-6" v-if = "!state.id">
+        <div class="form-group col-6" v-if="!id">
           <label htmlFor="password">confirm Password</label>
           <input
             type="password"
             name="confirmPassword"
-            v-model="state.user.confirmPassword"
+            v-model="user.confirmPassword"
             class="form-control"
             :class="{ 'is-invalid': submitted && errors.has('confirmPassword') }"
           />
-          <!-- <div v-if="submitted && errors.has('password')" class="invalid-feedback">
-          {{ errors.first("password") }}
-        </div> -->
-          <span class="error-validate" v-if="v$.user.confirmPassword.$error">
-            {{ v$.user.confirmPassword.$errors[0].$message }}
+          <span class="error-validate" v-if="message.confirmPassword">
+            {{ message.confirmPassword }}
           </span>
         </div>
       </div>
     </form>
-    <div style="top: 20px; text-align: right;">
+    <div style="top: 20px; text-align: right">
       <button
         class="btn btn-success"
         @click="submitForm"
-        v-if="!state.id"
+        v-if="!id"
         style="margin-right: 20px"
       >
-        Add {{ state.user.id }}
+        Add {{ user.id }}
       </button>
       <button
         class="btn btn-success"
         @click="submitForm"
-        v-if="state.id"
+        v-if="id"
         style="margin-right: 20px"
       >
         Update
@@ -155,64 +145,36 @@ import { reactive, computed } from "vue";
 // import { helpers } from 'vuelidate/lib/validators'
 // import { Form, Field } from 'vee-validate'
 import useValidate from "@vuelidate/core";
-import { required, email, minLength, sameAs, helpers } from "@vuelidate/validators";
+import {
+  required,
+  email,
+  minLength,
+  maxLength,
+  sameAs,
+  helpers,
+} from "@vuelidate/validators";
 import * as Yup from "yup";
 import moment from "moment";
-
+import http from "@/http";
 import URL from "@/config/url";
+import Ajv from "ajv";
 
-export default {
-  setup() {
-    const state = reactive({
-      user: {
-        firstName: "",
-        lastName: "",
-        dob: "",
-        phone: "",
-        email: "",
-        username: "",
-        password: "",
-        confirmPassword: "",
-      },
-      id: null,
-      submitted: false,
-    });
-
-    const rules = computed(() => {
-      if (state.id) {
-        return {
-          user: {
-            firstName: {required, minLength: minLength(2) },
-            lastName: {required, minLength: minLength(2) },
-            dob: {},
-            phone: {required, minLength: minLength(10)},
-            email: {},
-            username: { minLength: minLength(5) },
-            password: {},
-            confirmPassword: {},
-          },
-        };
-      } else {
-        return {
-          // email: { required, email },
-          user: {
-            firstName: { required, minLength: minLength(2) },
-            lastName: { required, minLength: minLength(2) },
-            dob: { },
-            phone: { required, minLength: minLength(10) },
-            email: { required },
-            username: { required, minLength: minLength(5) },
-            password: { required, minLength: minLength(6) },
-            confirmPassword: { required, sameAs: sameAs(state.user.password) },
-          },
-        };
-      }
-    });
-
-    const v$ = useValidate(rules, state);
-
-    return { state, v$ };
+const schema = {
+  type: "object",
+  properties: {
+    firstName: { type: "string", minLength: 1 },
+    lastName: { type: "string", minLength: 1 },
+    username: { type: "string" },
+    dob: { type: "string" },
+    password: { type: "string" },
+    confirmPassword: { type: "string" },
   },
+  required: ["firstName", "lastName", "username", "password", "confirmPassword"],
+  additionalProperties: false,
+};
+const ajv = new Ajv();
+const validate = ajv.compile(schema);
+export default {
   data() {
     return {
       user: {
@@ -223,87 +185,117 @@ export default {
         dob: "",
         confirmPassword: "",
       },
+      message: {
+        firstName: "",
+        lastName: "",
+        username: "",
+        password: "",
+        dob: "",
+        confirmPassword: "",
+      },
       id: null,
       submitted: false,
+      msgPhone: "",
+      msgEmail: "",
     };
   },
   created() {
     if (this.$route.params.id) {
-      this.state.id = this.$route.params.id;
+      this.id = this.$route.params.id;
       this.getUser();
     }
-    // console.log("this.state.id:: ", this.state.id);
   },
   computed: {
     // ...mapState('account', ['status'])
   },
-  validations() {
-    return {
-      email: { required },
-      user: {
-        password: { required },
-        confirm: { required },
-      },
-    };
-  },
+
   methods: {
-    // ...mapActions('account', ['register']),
-    // handleSubmit(e) {
-    //     this.submitted = true;
-    //     this.$validator.validate().then(valid => {
-    //         if (valid) {
-    //             this.register(this.user);
-    //         }
-    //     });
-    // }
+    // submit
     submitForm() {
-      this.v$.$validate(); // checks all inputs
-      if (!this.v$.$error) {
-        if (this.state.id) {
-          this.editUser();
-        } else {
-          this.addUser();
-        }
-        // if ANY fail validation
-      } else {
-        // alert("Form failed validation");
+      this.resetMessage();
+      const valid = validate(this.user);
+      console.log("valid:: ", valid);
+      if (!valid) {
+        console.log("errors:: ", validate.errors);
+        this.message[validate.errors[0].instancePath.replace("/", "")] =
+          validate.errors[0].message;
       }
+      // if (this.id) {
+      //   this.editUser();
+      // } else {
+      //   this.addUser();
+      // }
     },
+
+    resetMessage() {
+      this.message = {
+        firstName: "",
+        lastName: "",
+        username: "",
+        password: "",
+        dob: "",
+        confirmPassword: "",
+      };
+    },
+    // Thêm mới người dùng
     addUser() {
-      const data = { ...this.state.user };
+      const data = { ...this.user };
       delete data.confirmPassword;
+      if (data && data.dob === "") {
+        data.dob = null;
+      }
       const addUserOtp = {
         method: "POST",
         data,
         url: URL.url_user,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       };
-      this.$http(addUserOtp)
+      // Api
+      http(addUserOtp)
         .then((result) => {
-          if (result && result.data) {
+          if (result && result.status === 200 && result.data) {
             // this.listUser = result.data.data;
-              this.$toast.success(`Thêm người dùng thành công`);
+            this.$toast.success(`Thêm người dùng thành công`);
             this.$router.push({ path: "/" });
+          } else if (
+            result &&
+            result.status === 400 &&
+            result.data &&
+            result.data.message
+          ) {
+            this.$toast.error(`${result.data.message}`);
+          } else {
+            this.$toast.error(`Thêm người dùng thất bại`);
           }
         })
         .catch((e) => {
-          this.$toast.error(`Thêm người dùng thất bại`);
-          console.log("err addUserOtp:: ", e);
+          if (e.response && e.response.data && e.response.data.message) {
+            this.$toast.error(`${e.response.data.message}`);
+          } else {
+            this.$toast.error(`Thêm người dùng thất bại`);
+          }
+          // console.log("err addUserOtp:: ", e.response);
         });
     },
 
-    // lấy chi tiết user
+    // Lấy chi tiết user
     getUser() {
-      if (this.state.id) {
+      if (this.id) {
         const listUserOtp = {
           method: "GET",
           params: {},
-          url: `${URL.url_user}/${this.state.id}`,
+          url: `${URL.url_user}/${this.id}`,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         };
-        this.$http(listUserOtp)
+        http(listUserOtp)
           .then((result) => {
             if (result && result.data && result.data.data) {
-              this.state.user = result.data.data;
-              this.state.user.dob = this.formatDate(this.state.user.dob, 'YYYY-MM-DD')
+              this.user = result.data.data;
+              this.user.dob = this.formatDate(this.user.dob, "YYYY-MM-DD");
             }
           })
           .catch((e) => {
@@ -314,8 +306,8 @@ export default {
 
     // Cập nhật user
     editUser() {
-      if (this.state.id) {
-        const data = { ...this.state.user };
+      if (this.id) {
+        const data = { ...this.user };
         delete data.password;
         delete data.confirmPassword;
         delete data.id;
@@ -325,9 +317,12 @@ export default {
         const listUserOtp = {
           method: "PUT",
           data,
-          url: `${URL.url_user}/${this.state.id}`,
+          url: `${URL.url_user}/${this.id}`,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         };
-        this.$http(listUserOtp)
+        http(listUserOtp)
           .then((result) => {
             if (result && result.data) {
               this.$toast.success(`Cập nhật người dùng thành công`);
@@ -340,11 +335,44 @@ export default {
           });
       }
     },
+
+    // Định dạng ngày tháng
     formatDate(value, format = "DD-MM-YYYY") {
       if (value && value !== "") {
         return moment(value).format(format);
       }
       return "";
+    },
+
+    // Chỉ nhập số
+    onlyNumber($event) {
+      //console.log($event.keyCode); //keyCodes value
+      let keyCode = $event.keyCode ? $event.keyCode : $event.which;
+      if ((keyCode < 48 || keyCode > 57) && keyCode !== 46) {
+        // 46 is dot
+        $event.preventDefault();
+      }
+    },
+
+    // Kiểm tra định dạng sdt
+    phonenumber(event) {
+      let phoneno = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+      if (event.target.value.match(phoneno)) {
+        this.msgPhone = "";
+        return true;
+      } else {
+        this.msgPhone = "Please enter a valid phone number";
+        return false;
+      }
+    },
+
+    // kiểm tra định dạng email
+    validateEmail(event) {
+      if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(event.target.value)) {
+        this.msgEmail = "";
+      } else {
+        this.msgEmail = "Please enter a valid email address";
+      }
     },
   },
 };

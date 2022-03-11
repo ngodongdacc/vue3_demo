@@ -141,7 +141,7 @@ export default {
                 // data,
                 url: URL.url_profile,
               };
-              axios(profileOpt)
+              this.$http(profileOpt)
                 .then((profile) => {})
                 .catch((e) => {
                   console.log("profile:: ", e);

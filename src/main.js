@@ -30,9 +30,12 @@ library.add(faWrench)
 
 const app = createApp(App)
 // app.prototype.$http = http
-
+if(localStorage.getItem('token')) {
+    app.config.globalProperties.$loggedIn = true;
+} else {
+    app.config.globalProperties.$loggedIn = false;
+};
 app.config.globalProperties.$http = http;
-app.config.globalProperties.$loggedIn = false;
 app.config.globalProperties.$up = (pro, value) => {
     app.config.globalProperties[pro] = value;
 }

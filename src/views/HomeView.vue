@@ -2,13 +2,16 @@
   <main>
     <!-- <TheWelcome /> -->
     <div class="header-action">
-      <RouterLink to ="/user"><i class="fa fa-plus-circle icon" aria-hidden="true"  /></RouterLink>
       <i
         class="fa fa-trash icon"
         aria-hidden="true"
         v-if="checkedUser.length"
         v-on:click="alertDisplay"
+        style="margin-right: 20px"
       ></i>
+      <RouterLink to="/user"
+        ><i class="fa fa-plus-circle icon" aria-hidden="true"
+      /></RouterLink>
     </div>
     <table class="table">
       <thead>
@@ -46,17 +49,24 @@
           <td>{{ item.email }}</td>
           <td>{{ item.phone }}</td>
           <td>{{ formatDate(item.createdAt) }}</td>
-          <td> <RouterLink  :to="{ path: `/user/${item.id}`}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></RouterLink></td>
+          <td>
+            <RouterLink :to="{ path: `/user/${item.id}` }"
+              ><i class="fa fa-pencil-square-o" aria-hidden="true"></i
+            ></RouterLink>
+          </td>
         </tr>
       </tbody>
     </table>
+    <div class="list-page">
+      <b>count: {{ count }}</b>
+    </div>
     <UserDetail ref="modal"></UserDetail>
   </main>
 </template>
 
 <script>
 import TheWelcome from "@/components/TheWelcome.vue";
-import { RouterLink } from 'vue-router'
+import { RouterLink } from "vue-router";
 import axios from "axios";
 import URL from "@/config/url";
 import { getCurrentInstance } from "vue";
@@ -70,6 +80,9 @@ export default {
       listUser: [],
       id: "",
       checkedUser: [],
+      count: 0,
+      listPage: 1,
+      page: 1,
     };
   },
   components: { UserDetail },
@@ -84,12 +97,16 @@ export default {
       const listUserOtp = {
         method: "GET",
         params: {},
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
         url: URL.url_user,
       };
-      this.$http(listUserOtp)
+      axios(listUserOtp)
         .then((result) => {
           if (result && result.data && result.data.data) {
             this.listUser = result.data.data;
+            this.count = result.data.count;
           }
         })
         .catch((e) => {
@@ -104,6 +121,9 @@ export default {
         data: {
           ids: this.checkedUser,
         },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
         url: URL.url_user,
       };
       this.$http(removeUserOtp)
@@ -113,12 +133,12 @@ export default {
           this.getListUser();
         })
         .catch((e) => {
-           this.$toast.error(`Xóa người dùng thất bại`);
+          this.$toast.error(`Xóa người dùng thất bại`);
           console.log("err getListUser:: ", e);
         });
     },
-    // cập nhật 
-    editUser(id){
+    // cập nhật
+    editUser(id) {
       this.id = id;
     },
     // Định dạng ngày-tháng-năm
@@ -172,10 +192,18 @@ export default {
   font-size: 30px;
   cursor: pointer;
 }
+.icon:hover {
+  font-size: 35px;
+}
 .fa-trash {
   color: red;
 }
 .fa-plus-circle {
   color: green;
+}
+.list-page {
+  width: 100%;
+  height: 30px;
+  text-align: right;
 }
 </style>
