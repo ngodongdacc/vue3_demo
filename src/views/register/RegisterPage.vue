@@ -142,9 +142,6 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import { reactive, computed } from "vue";
-// import { helpers } from 'vuelidate/lib/validators'
-// import { Form, Field } from 'vee-validate'
-import useValidate from "@vuelidate/core";
 import {
   required,
   email,
@@ -153,37 +150,32 @@ import {
   sameAs,
   helpers,
 } from "@vuelidate/validators";
+
 import * as Yup from "yup";
 import moment from "moment";
 import http from "@/http";
+import ajv from "@/ajv";
 import URL from "@/config/url";
-import Ajv from "ajv";
+
+
+import bodySchema from "./bodySchema";
 
 const schema = {
   type: "object",
   properties: {
-    firstName: {
-      type: "string",
-      minLength: 1,
-      // errorMesage:{
-      //   minLength:"sdasdas"
-      // }
-    },
-    lastName: { type: "string", minLength: 1 },
-    username: { type: "string" },
-    dob: { type: "string" },
-    password: { type: "string" },
-    confirmPassword: { type: "string" },
+    firstName: bodySchema.firstName,
+    lastName: bodySchema.lastName,
+    username: bodySchema.username,
+    phone: bodySchema.phone,
+    email: bodySchema.email,
+    dob: bodySchema.dob,
+    password: bodySchema.password,
+    confirmPassword: bodySchema.confirmPassword,
   },
   required: ["firstName", "lastName", "username", "password", "confirmPassword"],
-  additionalProperties: false,
-  errorMessage: {
-    type: "", // will not replace internal "type" error for the property "foo"
-    required: "Vui lòng",
-    additionalProperties: "should not have properties other than foo",
-  },
+  additionalProperties: true,
 };
-const ajv = new Ajv();
+
 const validate = ajv.compile(schema);
 export default {
   data() {
@@ -193,6 +185,8 @@ export default {
         lastName: "",
         username: "",
         password: "",
+        phone: "",
+        email: "",
         dob: "",
         confirmPassword: "",
       },
@@ -201,6 +195,8 @@ export default {
         lastName: "",
         username: "",
         password: "",
+        phone: "",
+        email: "",
         dob: "",
         confirmPassword: "",
       },
@@ -225,33 +221,16 @@ export default {
     submitForm() {
       this.resetMessage();
       const valid = validate(this.user);
-      console.log("valid:: ", valid);
       if (!valid) {
         console.log("errors:: ", validate.errors);
-
-        // this.message[validate.errors[0].instancePath.replace("/", "")] =
-        //   validate.errors[0].message;
-        for (const err of validate.errors) {
-          let message = "";
-          switch (err.keyword) {
-            case "minLength":
-              console.log("err.limit:: ", err.params.limit);
-              if (err.params.limit === 1) {
-                message = validate.errors[0].message + "firtname";
-              } else {
-                message = "Vui lòng điền thông tin";
-              }
-              break;
-            case "maximum":
-              console.log(err.limit);
-              break;
-            case "pattern":
-              console.log(err.pattern);
-              break;
-            // ...
+        console.log("user:: ", this.user);
+        validate.errors.forEach((err, index) => {
+          let message = validate.errors[index].message;
+          if (this.message[validate.errors[index].instancePath.replace("/", "")] === ""){
+            console.log('e:: ', validate.errors[index].instancePath.replace("/", ""));
+            this.message[validate.errors[index].instancePath.replace("/", "")] = message;
           }
-          this.message[validate.errors[0].instancePath.replace("/", "")] = message;
-        }
+        });
       }
       // if (this.id) {
       //   this.editUser();
@@ -268,6 +247,8 @@ export default {
         password: "",
         dob: "",
         confirmPassword: "",
+        phone: "",
+        email: ""
       };
     },
     // Thêm mới người dùng
