@@ -42,6 +42,9 @@
             class="form-control"
             :class="{ 'is-invalid': submitted && errors.has('old') }"
           />
+           <span class="error-validate" v-if="message.dob">
+            {{ message.dob }}
+          </span>
         </div>
         <div class="form-group col-6">
           <label for="phone">Phone</label>
@@ -166,20 +169,10 @@ import bodySchema from "./bodySchema";
 
 const schema = {
   type: "object",
-  properties: {
-    firstName: bodySchema.firstName,
-    lastName: bodySchema.lastName,
-    username: bodySchema.username,
-    phone: bodySchema.phone,
-    email: bodySchema.email,
-    dob: bodySchema.dob,
-    password: bodySchema.password,
-    confirmPassword: bodySchema.confirmPassword,
-  },
+  properties: bodySchema.addUser,
   required: ["firstName", "lastName", "username", "password", "confirmPassword"],
   additionalProperties: true,
 };
-
 const validate = ajv.compile(schema);
 export default {
   data() {
@@ -191,7 +184,7 @@ export default {
         password: "",
         phone: "",
         email: "",
-        dob: "",
+        // dob: null,
         confirmPassword: "",
       },
       message: {
