@@ -14,6 +14,7 @@ export default {
     },
     lastName: {
         type: "string",
+        default: "",
         format: "alphabetSplace",
         transform: ["trim"],
         minLength: 2,
@@ -24,6 +25,7 @@ export default {
     },
     username: {
         type: "string",
+        default: "",
         transform: ["trim"],
         format: "alphabet",
         minLength: 6,
@@ -35,16 +37,18 @@ export default {
     },
     phone: {
         type: "string",
+        default: "",
         minLength: 1,
         format: "phone",
         errorMessage: {
             minLength: "phone cannot be empty.",
-            format: "Phone not format"
+            format: "Must be a valid phone number."
         },
     },
     email: {
         type: "string",
         minLength: 1,
+        default: "",
         format: "email",
         //this is whats causing the error
         errorMessage: {
@@ -54,16 +58,11 @@ export default {
     },
     dob: {
         type: "string",
-        // minLength: 1,
-        // // format: "email",
-        // //this is whats causing the error
-        // errorMessage: {
-        //     minLength: "phone cannot be empty.",
-        //     // format: "Must be a valid email address.",
-        // },
+        format: "date",
     },
     password: {
         type: "string",
+        default: "",
         minLength: 6,
         //this is whats causing the error
         errorMessage: {
@@ -72,6 +71,7 @@ export default {
     },
     confirmPassword: {
         type: "string",
+        default: "",
         minLength: 6,
         //this is whats causing the error
         const: {

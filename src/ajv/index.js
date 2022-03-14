@@ -15,6 +15,6 @@ const ajv = new Ajv({
   ajv.addFormat("phone", /(84|0[3|5|7|8|9])+([0-9]{8})$/);
   // ajv.addFormat("special", /^[^<>{}\"/|;:.,~!?@#$%^=&*\\]\\\\()\\[¿§«»ω⊙¤°℃℉€¥£¢¡®©0-9_+]*$/;);
   ajv.addFormat("alphabet", /^[a-zA-Z0-9]*$/);
-  ajv.addFormat("alphabetSplace", /^[a-zA-Z0-9_ ]*$/);
+  ajv.addFormat("alphabetSplace", /^[a-z\u0000-\u007F]*$/);
 
   export default ajv;

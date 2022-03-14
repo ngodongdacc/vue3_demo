@@ -132,7 +132,7 @@ export default {
             if (result.data && result.data.token) {
               localStorage.setItem("token", result.data.token);
               this.$up("$http", http);
-              this.$up("$loggedIn", true);
+              this.$up("$loggedIn", 'true');
               const profileOpt = {
                 method: "GET",
                 headers: {

@@ -9,6 +9,7 @@
             type="text"
             name="firstName"
             v-model="user.firstName"
+            @change="checkValue('firstName')"
             class="form-control"
           />
           <span class="error-validate" v-if="message.firstName">
@@ -21,6 +22,7 @@
             type="text"
             v-model="user.lastName"
             name="lastName"
+            @change="checkValue('lastName')"
             class="form-control"
             :class="{ 'is-invalid': submitted && errors.has('lastName') }"
           />
@@ -46,7 +48,7 @@
           <input
             type="text"
             name="phone"
-            @change="phonenumber"
+            @change="checkValue('phone')"
             v-model="user.phone"
             class="form-control"
             :class="{ 'is-invalid': submitted && errors.has('phone') }"
@@ -61,8 +63,8 @@
           <input
             type="text"
             name="email"
-            @change="validateEmail"
             v-model="user.email"
+            @change="checkValue('email')"
             class="form-control"
             :class="{ 'is-invalid': submitted && errors.has('email') }"
           />
@@ -79,6 +81,7 @@
             type="text"
             name="username"
             v-model="user.username"
+            @change="checkValue('username')"
             class="form-control"
             :class="{ 'is-invalid': submitted && errors.has('username') }"
           />
@@ -92,6 +95,7 @@
             type="password"
             name="password"
             v-model="user.password"
+            @change="checkValue('password')"
             class="form-control"
             :class="{ 'is-invalid': submitted && errors.has('password') }"
           />
@@ -109,6 +113,7 @@
             name="confirmPassword"
             v-model="user.confirmPassword"
             class="form-control"
+            @change="checkValue('confirmPassword')"
             :class="{ 'is-invalid': submitted && errors.has('confirmPassword') }"
           />
           <span class="error-validate" v-if="message.confirmPassword">
@@ -156,7 +161,6 @@ import moment from "moment";
 import http from "@/http";
 import ajv from "@/ajv";
 import URL from "@/config/url";
-
 
 import bodySchema from "./bodySchema";
 
@@ -220,23 +224,28 @@ export default {
     // submit
     submitForm() {
       this.resetMessage();
-      const valid = validate(this.user);
-      if (!valid) {
-        console.log("errors:: ", validate.errors);
-        console.log("user:: ", this.user);
-        validate.errors.forEach((err, index) => {
-          let message = validate.errors[index].message;
-          if (this.message[validate.errors[index].instancePath.replace("/", "")] === ""){
-            console.log('e:: ', validate.errors[index].instancePath.replace("/", ""));
-            this.message[validate.errors[index].instancePath.replace("/", "")] = message;
-          }
-        });
+      if (!this.id) {
+        const valid = validate(this.user);
+        if (!valid) {
+          console.log("errors:: ", validate.errors);
+          console.log("user:: ", this.user);
+          validate.errors.forEach((err, index) => {
+            let message = validate.errors[index].message;
+            if (
+              this.message[validate.errors[index].instancePath.replace("/", "")] === ""
+            ) {
+              // console.log("e:: ", validate.errors[index].instancePath.replace("/", ""));
+              this.message[
+                validate.errors[index].instancePath.replace("/", "")
+              ] = message;
+            }
+          });
+        } else {
+          this.addUser();
+        }
+      } else {
+        this.editUser();
       }
-      // if (this.id) {
-      //   this.editUser();
-      // } else {
-      //   this.addUser();
-      // }
     },
 
     resetMessage() {
@@ -248,7 +257,7 @@ export default {
         dob: "",
         confirmPassword: "",
         phone: "",
-        email: ""
+        email: "",
       };
     },
     // Thêm mới người dùng
@@ -380,12 +389,19 @@ export default {
       }
     },
 
-    // kiểm tra định dạng email
-    validateEmail(event) {
-      if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(event.target.value)) {
-        this.msgEmail = "";
-      } else {
-        this.msgEmail = "Please enter a valid email address";
+    checkValue(key) {
+      this.message[key] = "";
+      // console.log("key:: ", key);
+      // console.log("user:: ", this.user);
+      const valid = validate(this.user);
+      if (!valid) {
+        validate.errors.forEach((err, index) => {
+          let message = validate.errors[index].message;
+          if (validate.errors[index].instancePath === `/${key}`) {
+            // console.log("e:: ", validate.errors[index].instancePath.replace("/", ""));
+            this.message[key] = message;
+          }
+        });
       }
     },
   },
