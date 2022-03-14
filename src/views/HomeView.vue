@@ -72,6 +72,7 @@ import URL from "@/config/url";
 import { getCurrentInstance } from "vue";
 import moment from "moment";
 import UserDetail from "./user/userDetail.vue";
+import http from "@/http";
 
 export default {
   setup() {},
@@ -126,7 +127,7 @@ export default {
         },
         url: URL.url_user,
       };
-      this.$http(removeUserOtp)
+      http(removeUserOtp)
         .then((result) => {
           this.$toast.success(`Xóa người dùng thành công`);
           this.checkedUser = [];

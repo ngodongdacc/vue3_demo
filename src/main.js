@@ -12,14 +12,9 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 // import BootstrapVue from 'bootstrap-vue'
 
 import BootstrapVue3 from 'bootstrap-vue-3'
+import Toaster from '@meforma/vue-toaster';
 import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
 import 'bootstrap/dist/css/bootstrap.css'
-
-import Toaster from '@meforma/vue-toaster';
-
-// Import Bootstrap an BootstrapVue CSS files (order is important)
-// import 'bootstrap-vue/dist/bootstrap-vue.css'
-
 
 import App from './App.vue'
 import router from './router'
@@ -29,7 +24,6 @@ library.add(faSnowman)
 library.add(faWrench)
 
 const app = createApp(App)
-// app.prototype.$http = http
 if(localStorage.getItem('token')) {
     app.config.globalProperties.$loggedIn = 'true';
 } else {
@@ -42,7 +36,6 @@ app.config.globalProperties.$up = (pro, value) => {
 app.config.globalProperties.$logOut = () => {
     localStorage.removeItem("token")
     app.config.globalProperties.$up('$loggedIn', 'false')
-    // console.log('$loggedIn:: ', app.config.globalProperties.$loggedIn);
     router.push('/login')
 };
 app.use(router)
@@ -51,7 +44,4 @@ app.use(BootstrapVue3)
 app.use(Toaster, {
     position: 'top-right'
 })
-// Make BootstrapVue available throughout your project
-// Optionally install the BootstrapVue icon components plugin
-// Vue.use(IconsPlugin)
 app.component('font-awesome-icon', FontAwesomeIcon).mount('#app')

@@ -52,7 +52,6 @@ import axios from "axios";
 import qs from "qs";
 import * as Yup from "yup";
 import URL from "@/config/url";
-// import Vue from 'vue'
 
 export default {
   setup() {
@@ -101,21 +100,9 @@ export default {
     };
   },
   methods: {
-    // ...mapActions('account', ['register']),
-    // handleSubmit(e) {
-    //     this.submitted = true;
-    //     this.$validator.validate().then(valid => {
-    //         if (valid) {
-    //             this.register(this.user);
-    //         }
-    //     });
-    // }
     submitForm() {
-      this.v$.$validate(); // checks all inputs
-      // console.log("this.v$.$error:: ", this.state.user);
+      this.v$.$validate(); 
       if (!this.v$.$error) {
-        // if ANY fail validation
-        //   alert("Form successfully submitted.");
         const data = {
           username: this.state.user.username,
           password: this.state.user.password,
@@ -141,7 +128,7 @@ export default {
                 // data,
                 url: URL.url_profile,
               };
-              this.$http(profileOpt)
+              http(profileOpt)
                 .then((profile) => {})
                 .catch((e) => {
                   console.log("profile:: ", e);
